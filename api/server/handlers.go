@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type emailsAPIHandler struct {}
+type emailsAPIHandler struct{}
 
 func newEmailsAPIHandler() *emailsAPIHandler {
 	return &emailsAPIHandler{}

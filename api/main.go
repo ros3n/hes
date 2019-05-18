@@ -16,7 +16,7 @@ func main() {
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
 	svr := server.NewServer("localhost:8080")
-	go func () { log.Fatal(svr.ListenAndServe()) }()
+	go func() { log.Fatal(svr.ListenAndServe()) }()
 
 	log.Println("Done.")
 	log.Println("Waiting for connections..")
