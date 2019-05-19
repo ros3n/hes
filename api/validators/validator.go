@@ -6,25 +6,32 @@ type Validator interface {
 
 	// Valid method informs if data validation has been successful
 	Valid() bool
+
+	// errors returns an array of validation errors
+	Errors() []ValidationError
 }
 
 const cannotBeBlankError = "can't be blank"
 
 // ValidationError contains a single error message related to a field
 type ValidationError struct {
-	Field   string
-	Message string
+	Field   string `json:"field"`
+	Message string `json:"message"`
 }
 
 // BaseValidator provides  basic utility functions and a container for error messages
 type BaseValidator struct {
-	Errors []ValidationError
+	errors []ValidationError
 }
 
 func (v *BaseValidator) Valid() bool {
-	return len(v.Errors) == 0
+	return len(v.errors) == 0
+}
+
+func (v *BaseValidator) Errors() []ValidationError {
+	return v.errors
 }
 
 func (v *BaseValidator) addError(field, message string) {
-	v.Errors = append(v.Errors, ValidationError{field, message})
+	v.errors = append(v.errors, ValidationError{field, message})
 }

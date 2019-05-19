@@ -27,3 +27,16 @@ type EmailChangeSet struct {
 	Subject    *string  `json:"subject"`
 	Message    *string  `json:"message"`
 }
+
+func (ecs *EmailChangeSet) ApplyChanges(email *Email) {
+	if ecs.Sender != nil {
+		email.Sender = *ecs.Sender
+	}
+	email.Recipients = ecs.Recipients
+	if ecs.Subject != nil {
+		email.Subject = *ecs.Subject
+	}
+	if ecs.Message != nil {
+		email.Message = *ecs.Message
+	}
+}

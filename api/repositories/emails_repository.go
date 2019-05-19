@@ -1,6 +1,14 @@
 package repositories
 
-import "github.com/ros3n/hes/api/models"
+import (
+	"errors"
+	"github.com/ros3n/hes/api/models"
+)
+
+var (
+	ErrFetchFailed  = errors.New("failed to fetch data")
+	ErrCreateFailed = errors.New("failed to insert data")
+)
 
 type EmailsRepository interface {
 	Find(id int) (*models.Email, error)

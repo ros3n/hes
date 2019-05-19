@@ -1,12 +1,13 @@
 package server
 
 import (
+	"github.com/ros3n/hes/api/server/handlers"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-func newRouter(emailsHandler *emailsAPIHandler) http.Handler {
+func newRouter(emailsHandler *handlers.EmailsAPIHandler) http.Handler {
 	router := mux.NewRouter()
 
 	addEmailsAPIHandlers(router, emailsHandler)
@@ -14,7 +15,7 @@ func newRouter(emailsHandler *emailsAPIHandler) http.Handler {
 	return router
 }
 
-func addEmailsAPIHandlers(router *mux.Router, handler *emailsAPIHandler) {
+func addEmailsAPIHandlers(router *mux.Router, handler *handlers.EmailsAPIHandler) {
 	emailsRouter := router.PathPrefix("/emails").Subrouter()
-	emailsRouter.HandleFunc("/", handler.createEmail).Methods(http.MethodPost)
+	emailsRouter.HandleFunc("/", handler.CreateEmail).Methods(http.MethodPost)
 }

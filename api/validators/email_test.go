@@ -30,7 +30,7 @@ func (suite *EmailValidatorTestSuite) runTestCase(changeSet *models.EmailChangeS
 	if errorMsg != "" {
 		errors = append(errors, ValidationError{key, errorMsg})
 	}
-	suite.Equal(errors, validator.Errors)
+	suite.Equal(errors, validator.errors)
 }
 
 func (suite *EmailValidatorTestSuite) TestSenderValidation() {
