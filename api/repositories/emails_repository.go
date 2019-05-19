@@ -11,7 +11,7 @@ var (
 )
 
 type EmailsRepository interface {
-	Find(id int) (*models.Email, error)
-	Create(*models.Email) (*models.Email, error)
-	All() ([]*models.Email, error)
+	Find(userID string, id int) (*models.Email, error)
+	Create(userID string, email *models.Email) (*models.Email, error)
+	All(userID string) (emails []*models.Email, err error)
 }

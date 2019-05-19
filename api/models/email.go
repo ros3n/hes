@@ -13,6 +13,7 @@ const (
 // about the current status in the pipeline.
 type Email struct {
 	ID         int         `json:"id"`
+	UserID     string      `json:"user_id"`
 	Sender     string      `json:"sender"`
 	Recipients []string    `json:"recipients"`
 	Subject    string      `json:"subject"`

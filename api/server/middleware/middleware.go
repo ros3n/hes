@@ -1,4 +1,4 @@
-package server
+package middleware
 
 import (
 	"context"
@@ -9,8 +9,8 @@ type contextKey string
 
 const UserIDContextKey contextKey = "user_id"
 
-func authenticationMiddleware(authService Authenticator) func(handler http.Handler) http.Handler {
-	return func (next http.Handler) http.Handler {
+func AuthenticationMiddleware(authService Authenticator) func(handler http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			userID, err := authService.Authenticate(req)
 			if err != nil {
@@ -19,7 +19,7 @@ func authenticationMiddleware(authService Authenticator) func(handler http.Handl
 			}
 			ctx := req.Context()
 			ctx = context.WithValue(ctx, UserIDContextKey, userID)
-			next.ServeHTTP(w, req)
+			next.ServeHTTP(w, req.WithContext(ctx))
 		})
 	}
 }

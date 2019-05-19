@@ -39,16 +39,29 @@ func (eh *EmailsAPIHandler) CreateEmail(w http.ResponseWriter, req *http.Request
 		return
 	}
 
+	// TODO: extract creation of an email to a service
 	email := &models.Email{Status: "created"}
 	changeSet.ApplyChanges(email)
 
-	email, err = eh.repository.Create(email)
+	email, err = eh.repository.Create(userID(req), email)
 	if err != nil {
 		eh.errorResponse(w, ErrServerError, http.StatusInternalServerError)
 		return
 	}
 
 	eh.jsonResponse(w, email)
+
+	return
+}
+
+func (eh *EmailsAPIHandler) ListEmails(w http.ResponseWriter, req *http.Request) {
+	allEmails, err := eh.repository.All(userID(req))
+	if err != nil {
+		eh.errorResponse(w, ErrServerError, http.StatusInternalServerError)
+		return
+	}
+
+	eh.jsonResponse(w, allEmails)
 
 	return
 }

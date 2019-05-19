@@ -6,44 +6,57 @@ import (
 )
 
 type SimpleEmailsRepository struct {
-	emails          map[int]*models.Email
+	emails          map[string]map[int]*models.Email
 	autoincrementId int
 	mtx             sync.Mutex
 }
 
 func NewSimpleEmailsRepository() *SimpleEmailsRepository {
-	emails := make(map[int]*models.Email)
+	emails := make(map[string]map[int]*models.Email)
 	return &SimpleEmailsRepository{emails: emails, autoincrementId: 1}
 }
 
-func (ser *SimpleEmailsRepository) Find(id int) (*models.Email, error) {
+func (ser *SimpleEmailsRepository) Find(userID string, id int) (*models.Email, error) {
 	ser.mtx.Lock()
 	defer ser.mtx.Unlock()
 
-	fetched := ser.emails[id]
+	if ser.emails[userID] == nil {
+		return nil, nil
+	}
+	fetched := ser.emails[userID][id]
 	if fetched == nil {
 		return nil, nil
 	}
 	return dup(fetched), nil
 }
 
-func (ser *SimpleEmailsRepository) Create(email *models.Email) (*models.Email, error) {
+func (ser *SimpleEmailsRepository) Create(userID string, email *models.Email) (*models.Email, error) {
 	ser.mtx.Lock()
 	defer ser.mtx.Unlock()
 
 	email.ID = ser.autoincrementId
 	ser.autoincrementId++
-	ser.emails[email.ID] = dup(email)
+	email.UserID = userID
+
+	if ser.emails[userID] == nil {
+		ser.emails[userID] = make(map[int]*models.Email)
+	}
+	ser.emails[userID][email.ID] = dup(email)
 
 	return email, nil
 }
 
-func (ser *SimpleEmailsRepository) All() ([]*models.Email, error) {
+func (ser *SimpleEmailsRepository) All(userID string) ([]*models.Email, error) {
 	ser.mtx.Lock()
 	defer ser.mtx.Unlock()
 
-	result := make([]*models.Email, 0, len(ser.emails))
-	for _, email := range ser.emails {
+	emails := ser.emails[userID]
+	if emails == nil {
+		return []*models.Email{}, nil
+	}
+
+	result := make([]*models.Email, 0, len(emails))
+	for _, email := range emails {
 		result = append(result, dup(email))
 	}
 

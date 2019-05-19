@@ -1,4 +1,4 @@
-package server
+package middleware
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ type Authenticator interface {
 type BasicAuthenticator struct {
 	userName string
 	password string
-	userID string
+	userID   string
 }
 
 func NewBasicAuthenticator(userName, password, userID string) *BasicAuthenticator {
