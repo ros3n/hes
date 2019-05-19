@@ -1,25 +1,35 @@
 package server
 
-import "errors"
+import (
+	"errors"
+	"net/http"
+)
 
 var ErrUserUnauthorized = errors.New("unauthorized")
 
 type Authenticator interface {
-	Authenticate(apiKey string) (int, error)
+	Authenticate(req *http.Request) (string, error)
 }
 
 type BasicAuthenticator struct {
-	apiKey string
-	userID int
+	userName string
+	password string
+	userID string
 }
 
-func NewBasicAuthenticator(apiKey string, userID int) *BasicAuthenticator {
-	return &BasicAuthenticator{apiKey: apiKey, userID: userID}
+func NewBasicAuthenticator(userName, password, userID string) *BasicAuthenticator {
+	return &BasicAuthenticator{userName: userName, password: password, userID: userID}
 }
 
-func (ba *BasicAuthenticator) Authenticate(apiKey string) (int, error) {
-	if apiKey == ba.apiKey {
-		return ba.userID, nil
+func (ba *BasicAuthenticator) Authenticate(req *http.Request) (string, error) {
+	username, password, ok := req.BasicAuth()
+	if !ok {
+		return "", ErrUserUnauthorized
 	}
-	return 0, ErrUserUnauthorized
+
+	if username != ba.userName || password != ba.password {
+		return "", ErrUserUnauthorized
+	}
+
+	return ba.userID, nil
 }

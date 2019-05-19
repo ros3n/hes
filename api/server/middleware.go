@@ -12,8 +12,7 @@ const UserIDContextKey contextKey = "user_id"
 func authenticationMiddleware(authService Authenticator) func(handler http.Handler) http.Handler {
 	return func (next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			apiKey := extractApiKey(req)
-			userID, err := authService.Authenticate(apiKey)
+			userID, err := authService.Authenticate(req)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusUnauthorized)
 				return
@@ -23,8 +22,4 @@ func authenticationMiddleware(authService Authenticator) func(handler http.Handl
 			next.ServeHTTP(w, req)
 		})
 	}
-}
-
-func extractApiKey(req *http.Request) string {
-	return req.Header.Get("X-API-Key")
 }
