@@ -1,8 +1,16 @@
 package handlers
 
 import (
+	"errors"
+	"github.com/gorilla/mux"
 	"github.com/ros3n/hes/api/server/middleware"
 	"net/http"
+	"strconv"
+)
+
+var (
+	ErrNotFound    = errors.New("requested resource was not found")
+	ErrServerError = errors.New("internal server error")
 )
 
 // UserID extracts a user's id from context. If for whatever reason the user id was empty, the app cannot proceed.
@@ -18,4 +26,10 @@ func userID(req *http.Request) string {
 	}
 
 	return userID
+}
+
+func emailID(req *http.Request) int {
+	strId := mux.Vars(req)["id"]
+	id, _ := strconv.Atoi(strId)
+	return id
 }

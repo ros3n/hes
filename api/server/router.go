@@ -21,4 +21,5 @@ func addEmailsAPIHandlers(router *mux.Router, handler *handlers.EmailsAPIHandler
 	emailsRouter := router.PathPrefix("/emails").Subrouter()
 	emailsRouter.HandleFunc("/", handler.ListEmails).Methods(http.MethodGet)
 	emailsRouter.HandleFunc("/", handler.CreateEmail).Methods(http.MethodPost)
+	emailsRouter.HandleFunc("/{id}/send", handler.SendEmail).Methods(http.MethodPost)
 }

@@ -2,12 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
 )
-
-var ErrServerError = errors.New("internal server error")
 
 type apiHandler struct{}
 

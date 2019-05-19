@@ -46,6 +46,21 @@ func (ser *SimpleEmailsRepository) Create(userID string, email *models.Email) (*
 	return email, nil
 }
 
+func (ser *SimpleEmailsRepository) Update(userID string, email *models.Email) (*models.Email, error) {
+	ser.mtx.Lock()
+	defer ser.mtx.Unlock()
+
+	if ser.emails[userID] == nil {
+		return nil, ErrEmailNotFound
+	}
+	if ser.emails[userID][email.ID] == nil {
+		return nil, ErrEmailNotFound
+	}
+	ser.emails[userID][email.ID] = dup(email)
+
+	return email, nil
+}
+
 func (ser *SimpleEmailsRepository) All(userID string) ([]*models.Email, error) {
 	ser.mtx.Lock()
 	defer ser.mtx.Unlock()
