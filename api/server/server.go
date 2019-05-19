@@ -9,9 +9,10 @@ import (
 )
 
 func NewServer(addr string) *http.Server {
+	authService := NewBasicAuthenticator("hypatostest", 1)
 	repo := repositories.NewSimpleEmailsRepository()
 	emailsHandler := apiHandlers.NewEmailsAPIHandler(repo)
-	router := newRouter(emailsHandler)
+	router := newRouter(authService, emailsHandler)
 	loggingRouter := handlers.LoggingHandler(os.Stdout, router)
 
 	return &http.Server{

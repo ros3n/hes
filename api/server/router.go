@@ -7,8 +7,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func newRouter(emailsHandler *handlers.EmailsAPIHandler) http.Handler {
+func newRouter(authService Authenticator, emailsHandler *handlers.EmailsAPIHandler) http.Handler {
 	router := mux.NewRouter()
+	router.Use(authenticationMiddleware(authService))
 
 	addEmailsAPIHandlers(router, emailsHandler)
 
