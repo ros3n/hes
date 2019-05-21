@@ -2,6 +2,7 @@ package mailer
 
 import (
 	"errors"
+
 	"github.com/ros3n/hes/mailer/models"
 )
 
