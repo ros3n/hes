@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/ros3n/hes/mailer/mailer"
-	"github.com/ros3n/hes/mailer/manager"
 	"github.com/ros3n/hes/mailer/models"
 	"github.com/ros3n/hes/mailer/worker"
 	"os"
@@ -13,7 +12,7 @@ import (
 
 func main() {
 	wg := sync.WaitGroup{}
-	callbackCh := make(chan manager.SendStatus)
+	callbackCh := make(chan models.SendStatus)
 
 	sendGridFactory := mailer.NewSendGridMailerFactory(os.Getenv("SEND_GRID_API_KEY"))
 	mailGunFactory := mailer.NewMailGunMailerFactory(
@@ -22,8 +21,8 @@ func main() {
 	amfMailGun := mailer.NewMailerFactory(mailGunFactory)
 	amfSendGrid := mailer.NewMailerFactory(sendGridFactory)
 
-	workerSendGrid := worker.NewWorker(wg, callbackCh, amfSendGrid, mailer.ProviderSendGrid)
-	workerMailGun := worker.NewWorker(wg, callbackCh, amfMailGun, mailer.ProviderMailGun)
+	workerSendGrid := worker.NewWorker(wg, callbackCh, amfSendGrid)
+	workerMailGun := worker.NewWorker(wg, callbackCh, amfMailGun)
 
 	var worker *worker.Worker
 	var sender string

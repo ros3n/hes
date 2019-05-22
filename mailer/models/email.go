@@ -8,3 +8,8 @@ type Email struct {
 	Subject    string   `json:"subject"`
 	Message    string   `json:"message"`
 }
+
+type SendStatus struct {
+	EmailID int
+	Success bool
+}

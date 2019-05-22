@@ -2,16 +2,16 @@ package worker
 
 import (
 	"errors"
-	"github.com/ros3n/hes/mailer/mailer"
-	"github.com/ros3n/hes/mailer/manager"
-	"github.com/ros3n/hes/mailer/models"
-	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"log"
 	"os"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/ros3n/hes/mailer/mailer"
+	"github.com/ros3n/hes/mailer/models"
+	"github.com/stretchr/testify/suite"
 )
 
 const emailID = 1
@@ -19,7 +19,7 @@ const emailID = 1
 type WorkerTestSuite struct {
 	suite.Suite
 	wg         sync.WaitGroup
-	callbackCh chan manager.SendStatus
+	callbackCh chan models.SendStatus
 	email      *models.Email
 }
 
@@ -33,7 +33,7 @@ func (ws *WorkerTestSuite) AfterSuite() {
 
 func (ws *WorkerTestSuite) SetupTest() {
 	ws.wg = sync.WaitGroup{}
-	ws.callbackCh = make(chan manager.SendStatus)
+	ws.callbackCh = make(chan models.SendStatus)
 	ws.email = &models.Email{ID: emailID}
 }
 
@@ -91,7 +91,7 @@ func TestRunWorkerSuite(t *testing.T) {
 }
 
 func (ws *WorkerTestSuite) setupWorker(mailerFactory *mailer.AbstractMailerFactory) *Worker {
-	return NewWorker(ws.wg, ws.callbackCh, mailerFactory, mailer.ProviderLocal)
+	return NewWorker(ws.wg, ws.callbackCh, mailerFactory)
 }
 
 func (ws *WorkerTestSuite) setupMailers(faulty bool, updateFaultyStrategy func(*bool)) *mailer.AbstractMailerFactory {

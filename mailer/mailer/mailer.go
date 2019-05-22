@@ -28,6 +28,7 @@ type MailerFactory interface {
 // AbstractMailerFactory contains MailerFactories ready to produce configured clients
 type AbstractMailerFactory struct {
 	factories map[EmailProvider]MailerFactory
+	providers []EmailProvider
 }
 
 // NewMailerFactory groups MailerFactories. Factories passed as arguments should be able to produce correctly configured
@@ -43,6 +44,7 @@ func NewMailerFactory(factories ...MailerFactory) *AbstractMailerFactory {
 }
 
 func (amf *AbstractMailerFactory) add(factory MailerFactory) {
+	amf.providers = append(amf.providers, factory.Provider())
 	amf.factories[factory.Provider()] = factory
 }
 
@@ -53,4 +55,8 @@ func (amf *AbstractMailerFactory) NewMailer(provider EmailProvider) (Mailer, err
 		return nil, ErrProviderNotSupported
 	}
 	return mailerFactory.NewMailer(), nil
+}
+
+func (amf *AbstractMailerFactory) Providers() []EmailProvider {
+	return amf.providers
 }
