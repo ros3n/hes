@@ -12,7 +12,7 @@ const (
 // Email struct contains the information necessary to send an email using and external provider and an information
 // about the current status in the pipeline.
 type Email struct {
-	ID         int         `json:"id"`
+	ID         int64       `json:"id"`
 	UserID     string      `json:"user_id"`
 	Sender     string      `json:"sender"`
 	Recipients []string    `json:"recipients"`

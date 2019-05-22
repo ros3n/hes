@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	userID  = "user-id"
-	emailID = 1
+	userID        = "user-id"
+	emailID int64 = 1
 )
 
 type SimpleEmailsRepoTestSuite struct {
@@ -22,7 +22,7 @@ func (suite *SimpleEmailsRepoTestSuite) SetupTest() {
 
 func (suite *SimpleEmailsRepoTestSuite) TestFind() {
 	email := testEmail(emailID)
-	suite.repo.emails[userID] = map[int]*models.Email{emailID: email}
+	suite.repo.emails[userID] = map[int64]*models.Email{emailID: email}
 
 	fetchedEmail, _ := suite.repo.Find(userID, emailID)
 
@@ -37,19 +37,19 @@ func (suite *SimpleEmailsRepoTestSuite) TestCreate() {
 	email := testEmail(0)
 
 	email, _ = suite.repo.Create(userID, email)
-	suite.Equal(1, email.ID)
-	suite.Equal(2, suite.repo.autoincrementId)
+	suite.Equal(emailID, email.ID)
+	suite.Equal(int64(2), suite.repo.autoincrementId)
 	suite.Equal(userID, email.UserID)
 }
 
 func (suite *SimpleEmailsRepoTestSuite) TestAll() {
 	email := testEmail(emailID)
-	suite.repo.emails[userID] = map[int]*models.Email{emailID: email}
+	suite.repo.emails[userID] = map[int64]*models.Email{emailID: email}
 
-	otherEmailID := emailID + 1
+	var otherEmailID int64 = emailID + 1
 	otherEmail := testEmail(otherEmailID)
 	otherUserID := "other-user"
-	suite.repo.emails[otherUserID] = map[int]*models.Email{otherEmailID: otherEmail}
+	suite.repo.emails[otherUserID] = map[int64]*models.Email{otherEmailID: otherEmail}
 
 	emails, _ := suite.repo.All(userID)
 	suite.Equal(1, len(emails))
@@ -60,7 +60,7 @@ func TestSimpleEmailsRepository(t *testing.T) {
 	suite.Run(t, new(SimpleEmailsRepoTestSuite))
 }
 
-func testEmail(id int) *models.Email {
+func testEmail(id int64) *models.Email {
 	return &models.Email{
 		ID:         id,
 		Sender:     "sender@example.com",

@@ -51,7 +51,7 @@ func (eh *EmailsAPIHandler) CreateEmail(w http.ResponseWriter, req *http.Request
 		return
 	}
 
-	eh.jsonResponse(w, email)
+	eh.jsonResponseWithStatus(w, email, http.StatusCreated)
 
 	return
 }

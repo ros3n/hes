@@ -9,10 +9,9 @@ import (
 	"os"
 )
 
-func NewServer(addr string) *http.Server {
+func NewServer(addr string, repository repositories.EmailsRepository) *http.Server {
 	authService := middleware.NewBasicAuthenticator("hypatos", "secret", "1")
-	repo := repositories.NewSimpleEmailsRepository()
-	emailsHandler := apiHandlers.NewEmailsAPIHandler(repo)
+	emailsHandler := apiHandlers.NewEmailsAPIHandler(repository)
 	router := newRouter(authService, emailsHandler)
 	loggingRouter := handlers.LoggingHandler(os.Stdout, router)
 

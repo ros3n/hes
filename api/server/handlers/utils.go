@@ -28,8 +28,8 @@ func userID(req *http.Request) string {
 	return userID
 }
 
-func emailID(req *http.Request) int {
+func emailID(req *http.Request) int64 {
 	strId := mux.Vars(req)["id"]
 	id, _ := strconv.Atoi(strId)
-	return id
+	return int64(id)
 }

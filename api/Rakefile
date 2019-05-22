@@ -1,0 +1,35 @@
+require 'active_record'
+
+def database_uri
+  URI(ENV['HES_DATABASE_URL'])
+end
+
+def connect
+  ActiveRecord::Base.establish_connection(database_uri.to_s)
+  ActiveRecord::Base.logger = Logger.new(STDOUT)
+  ActiveRecord::Migration.verbose = true
+end
+
+
+namespace :db do
+  desc 'Migrate the database'
+  task(:migrate) do
+    connect
+    ActiveRecord::MigrationContext.new("db/migrate/").migrate
+  end
+
+  desc 'Rollback the database'
+  task(:rollback) do
+    connect
+    ActiveRecord::MigrationContext.new("db/migrate/").rollback
+  end
+
+  task(:create) do
+    command = "createdb -U #{database_uri.user}"
+    command += " -h #{database_uri.host}" if database_uri.host.present?
+    command += " -p #{database_uri.port}" if database_uri.port.present?
+    command += " #{File.basename(database_uri.to_s)}"
+    system(command)
+  end
+end
+

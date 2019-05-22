@@ -6,17 +6,17 @@ import (
 )
 
 type SimpleEmailsRepository struct {
-	emails          map[string]map[int]*models.Email
-	autoincrementId int
+	emails          map[string]map[int64]*models.Email
+	autoincrementId int64
 	mtx             sync.Mutex
 }
 
 func NewSimpleEmailsRepository() *SimpleEmailsRepository {
-	emails := make(map[string]map[int]*models.Email)
+	emails := make(map[string]map[int64]*models.Email)
 	return &SimpleEmailsRepository{emails: emails, autoincrementId: 1}
 }
 
-func (ser *SimpleEmailsRepository) Find(userID string, id int) (*models.Email, error) {
+func (ser *SimpleEmailsRepository) Find(userID string, id int64) (*models.Email, error) {
 	ser.mtx.Lock()
 	defer ser.mtx.Unlock()
 
@@ -39,7 +39,7 @@ func (ser *SimpleEmailsRepository) Create(userID string, email *models.Email) (*
 	email.UserID = userID
 
 	if ser.emails[userID] == nil {
-		ser.emails[userID] = make(map[int]*models.Email)
+		ser.emails[userID] = make(map[int64]*models.Email)
 	}
 	ser.emails[userID][email.ID] = dup(email)
 
