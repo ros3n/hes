@@ -17,20 +17,21 @@ func main() {
 	log.SetFlags(log.Lshortfile)
 	log.Println("Starting server..")
 
+	// TODO: use viper
 	apiSenderAddr := strings.TrimSpace(os.Getenv("API_SENDER_ADDR"))
 	apiReceiverAddr := strings.TrimSpace(os.Getenv("API_RECEIVER_ADDR"))
 	apiAddr := strings.TrimSpace(os.Getenv("API_ADDR"))
+	dbAddr := strings.TrimSpace(os.Getenv("HES_DATABASE_URL"))
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
-	var err error
-	//repository, err = repositories.NewDBEmailsRepository(os.Getenv("HES_DATABASE_URL"))
-	//if err != nil {
-	//	panic(err)
-	//}
+	repository, err := repositories.NewDBEmailsRepository(dbAddr)
+	if err != nil {
+		panic(err)
+	}
 
-	repository := repositories.NewSimpleEmailsRepository()
+	//repository := repositories.NewSimpleEmailsRepository()
 
 	msgSender := messenger.NewGRPCMessageSender(apiSenderAddr)
 	msgReceiver := messenger.NewGRPCMessageReceiver(apiReceiverAddr)
