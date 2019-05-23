@@ -11,11 +11,11 @@ import (
 type Worker struct {
 	mailerFactory *mailer.AbstractMailerFactory
 	group         sync.WaitGroup
-	callbackCh    chan<- models.SendStatus
+	callbackCh    chan<- *models.SendStatus
 	nextProvider  func() mailer.EmailProvider
 }
 
-func NewWorker(group sync.WaitGroup, callbackCh chan<- models.SendStatus,
+func NewWorker(group sync.WaitGroup, callbackCh chan<- *models.SendStatus,
 	mf *mailer.AbstractMailerFactory) *Worker {
 
 	// next function creates a producer that returns EmailProviders using a round-robin strategy
@@ -51,10 +51,10 @@ func (w *Worker) sendEmail(email *models.Email) {
 
 	if err != nil {
 		log.Printf("Failed to send email %d. Stopping after %d retries\n", email.ID, maxRetries)
-		w.callbackCh <- models.SendStatus{EmailID: email.ID, Success: false}
+		w.callbackCh <- &models.SendStatus{EmailID: email.ID, Success: false}
 		return
 	}
 
 	log.Printf("Email %d sent successfully\n", email.ID)
-	w.callbackCh <- models.SendStatus{EmailID: email.ID, Success: true}
+	w.callbackCh <- &models.SendStatus{EmailID: email.ID, Success: true}
 }

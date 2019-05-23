@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/ros3n/hes/api/messenger"
 	"github.com/ros3n/hes/api/repositories"
 	"github.com/ros3n/hes/api/server"
 	"log"
@@ -22,7 +23,9 @@ func main() {
 		panic(err)
 	}
 
-	svr := server.NewServer("localhost:8080", repository)
+	msgSender := messenger.NewGRPCMessageSender("localhost:8888")
+
+	svr := server.NewServer("localhost:8080", repository, msgSender)
 	go func() { log.Fatal(svr.ListenAndServe()) }()
 
 	log.Println("Done.")

@@ -2,6 +2,7 @@ package manager
 
 import (
 	"github.com/ros3n/hes/mailer/mailer"
+	"github.com/ros3n/hes/mailer/messenger"
 	"github.com/ros3n/hes/mailer/models"
 	"github.com/ros3n/hes/mailer/worker"
 	"log"
@@ -9,27 +10,27 @@ import (
 )
 
 type Manager struct {
-	newEmailsChan chan *models.Email     // messenger passes new send requests via this channel
-	callbackChan  chan models.SendStatus // workers pass send reports to messenger via this channel
-	messenger     Messenger
-	factory       *mailer.AbstractMailerFactory
-	workerWg      sync.WaitGroup
-	stopChan      chan chan struct{}
+	newEmailsChan   chan *models.Email      // messageReceiver passes new send requests via this channel
+	callbackChan    chan *models.SendStatus // workers pass send reports to messageReceiver via this channel
+	messageReceiver messenger.MessageReceiver
+	factory         *mailer.AbstractMailerFactory
+	workerWg        sync.WaitGroup
+	stopChan        chan chan struct{}
 }
 
-func NewManager(messenger Messenger, factory *mailer.AbstractMailerFactory) *Manager {
+func NewManager(msgReceiver messenger.MessageReceiver, factory *mailer.AbstractMailerFactory) *Manager {
 	newEmailsChan := make(chan *models.Email)
-	callbackChan := make(chan models.SendStatus)
+	callbackChan := make(chan *models.SendStatus)
 	stopChan := make(chan chan struct{}, 1)
 	return &Manager{
-		messenger: messenger, factory: factory, newEmailsChan: newEmailsChan, callbackChan: callbackChan,
+		messageReceiver: msgReceiver, factory: factory, newEmailsChan: newEmailsChan, callbackChan: callbackChan,
 		workerWg: sync.WaitGroup{}, stopChan: stopChan,
 	}
 }
 
-func (m *Manager) Start() {
+func (m *Manager) Start() error {
 	log.Println("Starting manager..")
-	//go m.messenger.Start(newEmailsChan)
+	m.messageReceiver.Start(m.newEmailsChan)
 	go func() {
 		for {
 			select {
@@ -37,7 +38,7 @@ func (m *Manager) Start() {
 				m.scheduleSend(email)
 			case callback := <-m.stopChan:
 				log.Println("Manager is shutting down..")
-				//m.messenger.Stop()
+				m.messageReceiver.Stop()
 				m.workerWg.Wait()
 				log.Println("Done.")
 				callback <- struct{}{}
@@ -45,6 +46,7 @@ func (m *Manager) Start() {
 		}
 	}()
 	log.Println("Manager started.")
+	return nil
 }
 
 func (m *Manager) Stop() {

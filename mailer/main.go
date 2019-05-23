@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/ros3n/hes/mailer/mailer"
 	"github.com/ros3n/hes/mailer/manager"
+	"github.com/ros3n/hes/mailer/messenger"
 	"log"
 	"os"
 	"os/signal"
@@ -20,9 +21,13 @@ func main() {
 		os.Getenv("MAIL_GUN_DOMAIN"), os.Getenv("MAIL_GUN_API_KEY"),
 	)
 	mailerFactory := mailer.NewMailerFactory(mailGunFactory, sendGridFactory)
+	msgReceiver := messenger.NewGRPCMessageReceiver(":8888")
 
-	manager := manager.NewManager(nil, mailerFactory)
-	manager.Start()
+	manager := manager.NewManager(msgReceiver, mailerFactory)
+	err := manager.Start()
+	if err != nil {
+		panic(err)
+	}
 
 	sig := <-interrupt
 	switch sig {

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"github.com/ros3n/hes/api/messenger"
 	"github.com/ros3n/hes/api/models"
 	"github.com/ros3n/hes/api/parsers/emails"
 	"github.com/ros3n/hes/api/repositories"
@@ -13,10 +14,11 @@ import (
 type EmailsAPIHandler struct {
 	*apiHandler
 	repository repositories.EmailsRepository
+	msgSender  messenger.MessageSender
 }
 
-func NewEmailsAPIHandler(repository repositories.EmailsRepository) *EmailsAPIHandler {
-	return &EmailsAPIHandler{apiHandler: &apiHandler{}, repository: repository}
+func NewEmailsAPIHandler(repository repositories.EmailsRepository, sender messenger.MessageSender) *EmailsAPIHandler {
+	return &EmailsAPIHandler{apiHandler: &apiHandler{}, repository: repository, msgSender: sender}
 }
 
 func (eh *EmailsAPIHandler) CreateEmail(w http.ResponseWriter, req *http.Request) {
@@ -86,6 +88,11 @@ func (eh *EmailsAPIHandler) SendEmail(w http.ResponseWriter, req *http.Request) 
 
 	// TODO: schedule send
 	log.Printf("Scheduling send for email %d\n", email.ID)
+	err = eh.msgSender.SendEmail(req.Context(), email)
+	if err != nil {
+		eh.errorResponse(w, errors.New("failed to schedule send"), http.StatusInternalServerError)
+		return
+	}
 
 	email.Status = models.EmailQueued
 	email, err = eh.repository.Update(uID, email)

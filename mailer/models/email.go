@@ -2,7 +2,7 @@ package models
 
 // Email struct contains the information necessary to send an email using and external provider.
 type Email struct {
-	ID         int      `json:"id"`
+	ID         int64    `json:"id"`
 	Sender     string   `json:"sender"`
 	Recipients []string `json:"recipients"`
 	Subject    string   `json:"subject"`
@@ -10,6 +10,6 @@ type Email struct {
 }
 
 type SendStatus struct {
-	EmailID int
+	EmailID int64
 	Success bool
 }
