@@ -9,7 +9,8 @@ import (
 type apiHandler struct{}
 
 func (ah *apiHandler) errorResponse(w http.ResponseWriter, err error, status int) {
-	http.Error(w, err.Error(), status)
+	payload := map[string]string{"error": err.Error()}
+	ah.jsonResponseWithStatus(w, payload, status)
 	return
 }
 

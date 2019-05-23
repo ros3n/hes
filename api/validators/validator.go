@@ -33,6 +33,10 @@ func (v *BaseValidator) Errors() []ValidationError {
 	return v.errors
 }
 
+func (v *BaseValidator) APIErrors() map[string][]ValidationError {
+	return map[string][]ValidationError{"errors": v.errors}
+}
+
 func (v *BaseValidator) Error() string {
 	return "record is not valid"
 }

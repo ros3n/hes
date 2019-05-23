@@ -38,7 +38,7 @@ func (eh *EmailsAPIHandler) CreateEmail(w http.ResponseWriter, req *http.Request
 	}
 
 	if evErr, ok := err.(*validators.EmailValidator); ok {
-		eh.jsonResponseWithStatus(w, evErr.Errors(), http.StatusUnprocessableEntity)
+		eh.jsonResponseWithStatus(w, evErr.APIErrors(), http.StatusUnprocessableEntity)
 		return
 	}
 
