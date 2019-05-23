@@ -34,7 +34,11 @@ func NewManager(msgReceiver messenger.MessageReceiver, msgSender messenger.Messa
 
 func (m *Manager) Start() error {
 	log.Println("Starting manager..")
-	m.messageReceiver.Start(m.newEmailsChan)
+	err := m.messageReceiver.Start(m.newEmailsChan)
+	if err != nil {
+		return err
+	}
+
 	go func() {
 		for {
 			select {
@@ -51,6 +55,7 @@ func (m *Manager) Start() error {
 			}
 		}
 	}()
+
 	log.Println("Manager started.")
 	return nil
 }

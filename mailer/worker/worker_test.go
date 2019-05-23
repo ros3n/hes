@@ -19,7 +19,7 @@ const emailID = 1
 type WorkerTestSuite struct {
 	suite.Suite
 	wg         sync.WaitGroup
-	callbackCh chan models.SendStatus
+	callbackCh chan *models.SendStatus
 	email      *models.Email
 }
 
@@ -33,7 +33,7 @@ func (ws *WorkerTestSuite) AfterSuite() {
 
 func (ws *WorkerTestSuite) SetupTest() {
 	ws.wg = sync.WaitGroup{}
-	ws.callbackCh = make(chan models.SendStatus)
+	ws.callbackCh = make(chan *models.SendStatus)
 	ws.email = &models.Email{ID: emailID}
 }
 

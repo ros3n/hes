@@ -21,7 +21,7 @@ func (sg *SendGridMailer) Send(email *models.Email) error {
 		return err
 	}
 	if response.StatusCode != http.StatusAccepted {
-		err = fmt.Errorf("Got a non-202 response: %v", response)
+		err = fmt.Errorf("got a non-202 response: %v", response)
 		return err
 	}
 

@@ -12,7 +12,7 @@ import (
 
 func main() {
 	wg := sync.WaitGroup{}
-	callbackCh := make(chan models.SendStatus)
+	callbackCh := make(chan *models.SendStatus)
 
 	sendGridFactory := mailer.NewSendGridMailerFactory(os.Getenv("SEND_GRID_API_KEY"))
 	mailGunFactory := mailer.NewMailGunMailerFactory(

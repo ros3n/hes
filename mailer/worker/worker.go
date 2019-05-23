@@ -41,10 +41,14 @@ func (w *Worker) sendEmail(email *models.Email) {
 
 	err := try.Do(func(attempt int) (retry bool, err error) {
 		provider := w.nextProvider()
-		mailer, err := w.mailerFactory.NewMailer(provider)
-		err = mailer.Send(email)
+		m, err := w.mailerFactory.NewMailer(provider)
 		if err != nil {
-			log.Printf("Failed do send email %d (provider %T): %v\n", email.ID, provider, err)
+			log.Printf("Failed do send email %d: %v\n", email.ID, err)
+			return attempt < maxRetries, err
+		}
+		err = m.Send(email)
+		if err != nil {
+			log.Printf("Failed do send email %d: %v\n", email.ID, err)
 		}
 		return attempt < maxRetries, err
 	})
