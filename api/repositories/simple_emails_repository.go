@@ -30,6 +30,10 @@ func (ser *SimpleEmailsRepository) Find(userID string, id int64) (*models.Email,
 	return dup(fetched), nil
 }
 
+func (ser *SimpleEmailsRepository) FindByID(id int64) (*models.Email, error) {
+	return nil, nil
+}
+
 func (ser *SimpleEmailsRepository) Create(userID string, email *models.Email) (*models.Email, error) {
 	ser.mtx.Lock()
 	defer ser.mtx.Unlock()

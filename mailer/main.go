@@ -22,8 +22,9 @@ func main() {
 	)
 	mailerFactory := mailer.NewMailerFactory(mailGunFactory, sendGridFactory)
 	msgReceiver := messenger.NewGRPCMessageReceiver(":8888")
+	msgSender := messenger.NewGRPCMessageSender(":9999")
 
-	manager := manager.NewManager(msgReceiver, mailerFactory)
+	manager := manager.NewManager(msgReceiver, msgSender, mailerFactory)
 	err := manager.Start()
 	if err != nil {
 		panic(err)

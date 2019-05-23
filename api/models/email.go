@@ -5,8 +5,8 @@ type EmailStatus string
 const (
 	EmailCreated EmailStatus = "created"
 	EmailQueued              = "queued"
-	EmailSent                = "failed"
-	EmailBounced             = "bounced"
+	EmailSent                = "sent"
+	EmailFailed              = "failed"
 )
 
 // Email struct contains the information necessary to send an email using and external provider and an information
@@ -40,4 +40,9 @@ func (ecs *EmailChangeSet) ApplyChanges(email *Email) {
 	if ecs.Message != nil {
 		email.Message = *ecs.Message
 	}
+}
+
+type SendStatus struct {
+	ID      int64
+	Success bool
 }

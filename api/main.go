@@ -5,6 +5,7 @@ import (
 	"github.com/ros3n/hes/api/messenger"
 	"github.com/ros3n/hes/api/repositories"
 	"github.com/ros3n/hes/api/server"
+	"github.com/ros3n/hes/api/services"
 	"log"
 	"os"
 	"os/signal"
@@ -24,11 +25,16 @@ func main() {
 	}
 
 	msgSender := messenger.NewGRPCMessageSender("localhost:8888")
+	msgReceiver := messenger.NewGRPCMessageReceiver("localhost:9999")
+	emailService := services.NewEmailService(repository)
+
+	callbackServer := server.NewCallbackServer(msgReceiver, emailService)
 
 	svr := server.NewServer("localhost:8080", repository, msgSender)
 	go func() { log.Fatal(svr.ListenAndServe()) }()
+	callbackServer.Start()
 
-	log.Println("Done.")
+	log.Println("Server started.")
 	log.Println("Waiting for connections..")
 
 	sig := <-interrupt
@@ -38,9 +44,10 @@ func main() {
 	}
 
 	log.Print("Shutting down..")
+	callbackServer.Stop()
 	err = svr.Shutdown(context.Background())
 	if err != nil {
 		panic(err)
 	}
-	log.Print("Done.")
+	log.Println("Done.")
 }

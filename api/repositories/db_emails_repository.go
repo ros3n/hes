@@ -48,6 +48,31 @@ func (der *DBEmailsRepository) Find(userID string, id int64) (*models.Email, err
 
 	return &email, nil
 }
+func (der *DBEmailsRepository) FindByID(id int64) (*models.Email, error) {
+	emailQuery := der.queryBuilder.Select("*").From("emails").Where(sq.Eq{"id": id})
+
+	query, args, err := emailQuery.ToSql()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	email := models.Email{}
+
+	err = der.db.
+		QueryRow(query, args...).
+		Scan(
+			&email.ID, &email.UserID, &email.Sender, pq.Array(&email.Recipients), &email.Subject, &email.Message,
+			&email.Status,
+		)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return &email, nil
+}
 
 func (der *DBEmailsRepository) Create(userID string, email *models.Email) (*models.Email, error) {
 	email.UserID = userID

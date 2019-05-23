@@ -16,3 +16,14 @@ message SendEmailRequest {
 message SendEmailReply {
   string status = 1;
 }
+
+service MailerAPI {
+  rpc SendStatus (SendStatusRequest) returns (SendStatusReply) {}
+}
+
+message SendStatusRequest {
+  int64 id = 1;
+  bool success = 2;
+}
+
+message SendStatusReply {}
