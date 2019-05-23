@@ -26,13 +26,16 @@ func main() {
 
 	msgSender := messenger.NewGRPCMessageSender("localhost:8888")
 	msgReceiver := messenger.NewGRPCMessageReceiver("localhost:9999")
-	emailService := services.NewEmailService(repository)
+	emailService := services.NewEmailService(repository, msgSender)
 
 	callbackServer := server.NewCallbackServer(msgReceiver, emailService)
 
-	svr := server.NewServer("localhost:8080", repository, msgSender)
+	svr := server.NewServer("localhost:8080", emailService)
 	go func() { log.Fatal(svr.ListenAndServe()) }()
-	callbackServer.Start()
+	err = callbackServer.Start()
+	if err != nil {
+		panic(err)
+	}
 
 	log.Println("Server started.")
 	log.Println("Waiting for connections..")

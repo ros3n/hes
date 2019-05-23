@@ -9,6 +9,7 @@ type Validator interface {
 
 	// errors returns an array of validation errors
 	Errors() []ValidationError
+	Error() string
 }
 
 const cannotBeBlankError = "can't be blank"
@@ -30,6 +31,10 @@ func (v *BaseValidator) Valid() bool {
 
 func (v *BaseValidator) Errors() []ValidationError {
 	return v.errors
+}
+
+func (v *BaseValidator) Error() string {
+	return "record is not valid"
 }
 
 func (v *BaseValidator) addError(field, message string) {

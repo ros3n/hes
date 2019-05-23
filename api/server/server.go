@@ -2,17 +2,16 @@ package server
 
 import (
 	"github.com/gorilla/handlers"
-	"github.com/ros3n/hes/api/messenger"
-	"github.com/ros3n/hes/api/repositories"
 	apiHandlers "github.com/ros3n/hes/api/server/handlers"
 	"github.com/ros3n/hes/api/server/middleware"
+	"github.com/ros3n/hes/api/services"
 	"net/http"
 	"os"
 )
 
-func NewServer(addr string, repository repositories.EmailsRepository, messageSender messenger.MessageSender) *http.Server {
+func NewServer(addr string, emailService *services.EmailService) *http.Server {
 	authService := middleware.NewBasicAuthenticator("hypatos", "secret", "1")
-	emailsHandler := apiHandlers.NewEmailsAPIHandler(repository, messageSender)
+	emailsHandler := apiHandlers.NewEmailsAPIHandler(emailService)
 	router := newRouter(authService, emailsHandler)
 	loggingRouter := handlers.LoggingHandler(os.Stdout, router)
 

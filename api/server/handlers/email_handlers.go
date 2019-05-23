@@ -2,23 +2,19 @@ package handlers
 
 import (
 	"errors"
-	"github.com/ros3n/hes/api/messenger"
-	"github.com/ros3n/hes/api/models"
 	"github.com/ros3n/hes/api/parsers/emails"
-	"github.com/ros3n/hes/api/repositories"
+	"github.com/ros3n/hes/api/services"
 	"github.com/ros3n/hes/api/validators"
-	"log"
 	"net/http"
 )
 
 type EmailsAPIHandler struct {
 	*apiHandler
-	repository repositories.EmailsRepository
-	msgSender  messenger.MessageSender
+	emailService *services.EmailService
 }
 
-func NewEmailsAPIHandler(repository repositories.EmailsRepository, sender messenger.MessageSender) *EmailsAPIHandler {
-	return &EmailsAPIHandler{apiHandler: &apiHandler{}, repository: repository, msgSender: sender}
+func NewEmailsAPIHandler(service *services.EmailService) *EmailsAPIHandler {
+	return &EmailsAPIHandler{apiHandler: &apiHandler{}, emailService: service}
 }
 
 func (eh *EmailsAPIHandler) CreateEmail(w http.ResponseWriter, req *http.Request) {
@@ -34,45 +30,36 @@ func (eh *EmailsAPIHandler) CreateEmail(w http.ResponseWriter, req *http.Request
 		return
 	}
 
-	changeSet := parser.Data()
-	validator := validators.NewEmailValidator(changeSet)
-	validator.Validate()
+	email, err := eh.emailService.Create(userID(req), parser.Data())
 
-	if !validator.Valid() {
-		eh.jsonResponseWithStatus(w, validator.Errors(), http.StatusUnprocessableEntity)
+	if err == nil {
+		eh.jsonResponseWithStatus(w, email, http.StatusCreated)
 		return
 	}
 
-	// TODO: extract creation of an email to a service
-	email := &models.Email{Status: "created"}
-	changeSet.ApplyChanges(email)
-
-	email, err = eh.repository.Create(userID(req), email)
-	if err != nil {
-		eh.errorResponse(w, ErrServerError, http.StatusInternalServerError)
+	if evErr, ok := err.(*validators.EmailValidator); ok {
+		eh.jsonResponseWithStatus(w, evErr.Errors(), http.StatusUnprocessableEntity)
 		return
 	}
 
-	eh.jsonResponseWithStatus(w, email, http.StatusCreated)
-
+	eh.errorResponse(w, ErrServerError, http.StatusInternalServerError)
 	return
 }
 
 func (eh *EmailsAPIHandler) ListEmails(w http.ResponseWriter, req *http.Request) {
-	allEmails, err := eh.repository.All(userID(req))
+	allEmails, err := eh.emailService.All(userID(req))
 	if err != nil {
 		eh.errorResponse(w, ErrServerError, http.StatusInternalServerError)
 		return
 	}
 
 	eh.jsonResponse(w, allEmails)
-
 	return
 }
 
 func (eh *EmailsAPIHandler) SendEmail(w http.ResponseWriter, req *http.Request) {
 	uID, eID := userID(req), emailID(req)
-	email, err := eh.repository.Find(uID, eID)
+	email, err := eh.emailService.Find(uID, eID)
 	if err != nil {
 		eh.errorResponse(w, ErrServerError, http.StatusInternalServerError)
 		return
@@ -86,22 +73,12 @@ func (eh *EmailsAPIHandler) SendEmail(w http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	// TODO: schedule send
-	log.Printf("Scheduling send for email %d\n", email.ID)
-	err = eh.msgSender.SendEmail(req.Context(), email)
+	err = eh.emailService.ScheduleSend(req.Context(), email)
 	if err != nil {
 		eh.errorResponse(w, errors.New("failed to schedule send"), http.StatusInternalServerError)
 		return
 	}
 
-	email.Status = models.EmailQueued
-	email, err = eh.repository.Update(uID, email)
-	if err != nil {
-		eh.errorResponse(w, ErrServerError, http.StatusInternalServerError)
-		return
-	}
-
 	eh.jsonResponse(w, email)
-
 	return
 }

@@ -85,13 +85,13 @@ func (der *DBEmailsRepository) Create(userID string, email *models.Email) (*mode
 	query, args, err := createEmailQuery.ToSql()
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, ErrCreateFailed
 	}
 
 	var emailID int64
 	if err = der.db.QueryRow(query, args...).Scan(&emailID); err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, ErrCreateFailed
 	}
 
 	email.ID = emailID

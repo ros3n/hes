@@ -29,12 +29,15 @@ func (gms *GRPCMessageSender) SendEmail(ctx context.Context, email *models.Email
 		return err
 	}
 	defer conn.Close()
+
 	client := pb.NewMailerClient(conn)
+
 	_, err = client.SendEmail(ctx, serializedEmail(email))
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+
 	return nil
 }
 

@@ -25,12 +25,19 @@ func NewCallbackServer(msgReceiver messenger.MessageReceiver, emailService *serv
 
 func (m *CallbackServer) Start() error {
 	log.Println("Starting CallbackServer..")
-	m.messageReceiver.Start(m.sendStatusChan)
+	err := m.messageReceiver.Start(m.sendStatusChan)
+	if err != nil {
+		return err
+	}
+
 	go func() {
 		for {
 			select {
 			case status := <-m.sendStatusChan:
-				m.emailService.UpdateStatus(status)
+				err := m.emailService.UpdateStatus(status)
+				if err != nil {
+					log.Println(err)
+				}
 			case callback := <-m.stopChan:
 				log.Println("CallbackServer is shutting down..")
 				m.messageReceiver.Stop()
@@ -39,6 +46,7 @@ func (m *CallbackServer) Start() error {
 			}
 		}
 	}()
+
 	log.Println("CallbackServer started.")
 	return nil
 }
