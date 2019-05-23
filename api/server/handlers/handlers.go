@@ -8,6 +8,10 @@ import (
 
 type apiHandler struct{}
 
+func HealthCheck(w http.ResponseWriter, req *http.Request) {
+	w.Write([]byte("OK"))
+}
+
 func (ah *apiHandler) errorResponse(w http.ResponseWriter, err error, status int) {
 	payload := map[string]string{"error": err.Error()}
 	ah.jsonResponseWithStatus(w, payload, status)

@@ -89,6 +89,27 @@ func (suite *EmailsAPITestSuite) TestEmailValidation() {
 	}
 }
 
+func (suite *EmailsAPITestSuite) TestEmailCreation() {
+	testCases := []struct {
+		requestBody    string
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			`{"recipients": ["valid@example.com"],"sender":"test@example.com","subject":"test","message":"test"}`,
+			http.StatusCreated,
+			`{"id":1,"user_id":"1","sender":"test@example.com","recipients":["valid@example.com"],"subject":"test","message":"test","status":"created"}`,
+		},
+	}
+
+	for _, testCase := range testCases {
+		resp := suite.makeRequest("POST", "/emails", testCase.requestBody)
+
+		suite.Equal(testCase.expectedStatus, resp.StatusCode)
+		suite.Equal(testCase.expectedBody, suite.getResponseBody(resp))
+	}
+}
+
 func (suite *EmailsAPITestSuite) makeRequest(method, path, body string) *http.Response {
 	reqBody := strings.NewReader(body)
 	req, err := http.NewRequest(method, path, reqBody)

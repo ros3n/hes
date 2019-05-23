@@ -31,6 +31,15 @@ func (ser *SimpleEmailsRepository) Find(userID string, id int64) (*models.Email,
 }
 
 func (ser *SimpleEmailsRepository) FindByID(id int64) (*models.Email, error) {
+	ser.mtx.Lock()
+	defer ser.mtx.Unlock()
+
+	for _, emails := range ser.emails {
+		fetched := emails[id]
+		if fetched != nil {
+			return dup(fetched), nil
+		}
+	}
 	return nil, nil
 }
 
@@ -87,6 +96,7 @@ func dup(email *models.Email) *models.Email {
 	copy(recipients, email.Recipients)
 	return &models.Email{
 		ID:         email.ID,
+		UserID:     email.UserID,
 		Sender:     email.Sender,
 		Recipients: recipients,
 		Subject:    email.Subject,

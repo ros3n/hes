@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 )
 
@@ -16,21 +17,28 @@ func main() {
 	log.SetFlags(log.Lshortfile)
 	log.Println("Starting server..")
 
+	apiSenderAddr := strings.TrimSpace(os.Getenv("API_SENDER_ADDR"))
+	apiReceiverAddr := strings.TrimSpace(os.Getenv("API_RECEIVER_ADDR"))
+	apiAddr := strings.TrimSpace(os.Getenv("API_ADDR"))
+
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
-	repository, err := repositories.NewDBEmailsRepository(os.Getenv("HES_DATABASE_URL"))
-	if err != nil {
-		panic(err)
-	}
+	var err error
+	//repository, err = repositories.NewDBEmailsRepository(os.Getenv("HES_DATABASE_URL"))
+	//if err != nil {
+	//	panic(err)
+	//}
 
-	msgSender := messenger.NewGRPCMessageSender("localhost:8888")
-	msgReceiver := messenger.NewGRPCMessageReceiver("localhost:9999")
+	repository := repositories.NewSimpleEmailsRepository()
+
+	msgSender := messenger.NewGRPCMessageSender(apiSenderAddr)
+	msgReceiver := messenger.NewGRPCMessageReceiver(apiReceiverAddr)
 	emailService := services.NewEmailService(repository, msgSender)
 
 	callbackServer := server.NewCallbackServer(msgReceiver, emailService)
 
-	svr := server.NewServer("localhost:8080", emailService)
+	svr := server.NewServer(apiAddr, emailService)
 	go func() { log.Fatal(svr.ListenAndServe()) }()
 	err = callbackServer.Start()
 	if err != nil {

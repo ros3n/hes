@@ -71,12 +71,14 @@ func (es *EmailService) ScheduleSend(ctx context.Context, email *models.Email) e
 	log.Printf("Scheduling send for email %d\n", email.ID)
 	err := es.msgSender.SendEmail(ctx, email)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
 	email.Status = models.EmailQueued
 	email, err = es.repository.Update(email.UserID, email)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 

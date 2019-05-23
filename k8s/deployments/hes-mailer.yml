@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: hes-mailer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hes-mailer
+    spec:
+      containers:
+        - name: hes-mailer
+          image: ros3n/hes-mailer:latest # for the sake of simplicity
+          imagePullPolicy: Always
+          ports:
+          livenessProbe:
+            httpGet:
+              path: "/"
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: "/"
+              port: 8080
+          envFrom:
+            - secretRef:
+                name: hes-secrets
