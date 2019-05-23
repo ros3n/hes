@@ -1,166 +1,179 @@
-swagger: '2.0'
+openapi: 3.0.1
 info:
-  description: API
+  title: HES API
+  description: HES API
   version: 1.0.0
-  title: API
-  # put the contact info for your development or API team
-  contact:
-    email: you@your-company.com
 
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://138.68.126.72/
 
-host: 138.68.126.72
-schemes:
-  - http
+security:
+  - basicAuth: []
 
 paths:
   /emails:
     get:
+      tags:
+        - HES
       operationId: fetchEmails
-      tags: [HES]
-      produces:
-        - application/json
       responses:
         200:
           description: A list of Emails created by the user
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Email'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Email'
         401:
           description: user not authenticated
+          content: {}
     post:
+      tags:
+        - HES
       operationId: createEmail
-      tags: [HES]
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: emailBody
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/EmailBody'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailBody'
+        required: true
       responses:
         201:
           description: email successfully created
-          schema:
-            $ref: '#/definitions/Email'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
         400:
           description: malformed payload
+          content: {}
         401:
           description: user not authenticated
+          content: {}
         422:
           description: email data is invalid
-          schema:
-            $ref: '#/definitions/Errors'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
   /emails/{id}/send:
     post:
+      tags:
+        - HES
       operationId: sendEmail
-      tags: [HES]
-      produces:
-        - application/json
       parameters:
         - name: id
           in: path
-          required: true
-          type: string
           description: id of an email that will be sent
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: email successfully scheduled for send
-          schema:
-            $ref: '#/definitions/Email'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
         401:
           description: user not authenticated
+          content: {}
         404:
           description: email not found
+          content: {}
         422:
           description: email cannot be sent
-          schema:
-            $ref: '#/definitions/Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    basicAuth:     # <-- arbitrary name for the security scheme
+      type: http
+      scheme: basic
 
-definitions:
-  EmailBody:
-    type: object
-    description: Email passes user input to the mailing system.
-    required:
-      - sender
-      - recipients
-      - subject
-      - message
-    properties:
-      sender:
-        type: string
-        description: Email address of a sender. Must be a valid email address.
-      recipients:
-        type: array
-        items:
+  schemas:
+    Errors:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorMessage'
+      description: An object containing errors.
+    EmailBody:
+      required:
+        - message
+        - recipients
+        - sender
+        - subject
+      type: object
+      properties:
+        sender:
           type: string
-          description: A list of email address to which the email will be sent. Must be a list of valid email address.
-      subject:
-        type: string
-        description: A subject of the email.
-      message:
-        type: string
-        description: A message that will be sent to the recipients.
-
-  Email:
-    type: object
-    description: Email stores data that is needed to send emails.
-    properties:
-      id:
-        type: integer
-        description: Unique identifier of an email.
-      user_id:
-        type: string
-        description: Unique identifier of a user that owns the email.
-      sender:
-        type: string
-        description: Email address of a sender. Must be a valid email address.
-      recipients:
-        type: array
-        items:
+          description: Email address of a sender. Must be a valid email address.
+        recipients:
+          type: array
+          items:
+            type: string
+            description: A list of email address to which the email will be sent.
+              Must be a list of valid email address.
+        subject:
           type: string
-        description: A list of email address to which the email will be sent. Must be a list of valid email address.
-      subject:
-        type: string
-        description: A subject of the email.
-      message:
-        type: string
-        description: A message that will be sent to the recipients.
-      status:
-        type: string
-        enum: ['created', 'queued', 'sent', 'failed']
-        description: Informs at what stage is the email.
-
-  Errors:
-    type: object
-    description: An object containing errors.
-    properties:
-      errors:
-        type: array
-        items:
-          $ref: '#/definitions/ErrorMessage'
-
-  Error:
-    type: object
-    description: Explains why a user's action failed
-    properties:
-      error:
-        type: string
-        description: Error explaination.
-
-  ErrorMessage:
-    type: object
-    description: Error message explains a sigle error.
-    properties:
-      field:
-        type: string
-        description: Name of the field that is invalid.
-      message:
-        type: string
-        description: Error explaination.
+          description: A subject of the email.
+        message:
+          type: string
+          description: A message that will be sent to the recipients.
+      description: Email passes user input to the mailing system.
+    Email:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of an email.
+        user_id:
+          type: string
+          description: Unique identifier of a user that owns the email.
+        sender:
+          type: string
+          description: Email address of a sender. Must be a valid email address.
+        recipients:
+          type: array
+          description: A list of email address to which the email will be sent. Must
+            be a list of valid email address.
+          items:
+            type: string
+        subject:
+          type: string
+          description: A subject of the email.
+        message:
+          type: string
+          description: A message that will be sent to the recipients.
+        status:
+          type: string
+          description: Informs at what stage is the email.
+          enum:
+            - created
+            - queued
+            - sent
+            - failed
+      description: Email stores data that is needed to send emails.
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error explaination.
+      description: Explains why a user's action failed
+    ErrorMessage:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Name of the field that is invalid.
+        message:
+          type: string
+          description: Error explaination.
+      description: Error message explains a sigle error.
