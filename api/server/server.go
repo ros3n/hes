@@ -9,8 +9,7 @@ import (
 	"os"
 )
 
-func NewServer(addr string, emailService *services.EmailService) *http.Server {
-	authService := middleware.NewBasicAuthenticator("hypatos", "secret", "1")
+func NewServer(addr string, emailService *services.EmailService, authService middleware.Authenticator) *http.Server {
 	emailsHandler := apiHandlers.NewEmailsAPIHandler(emailService)
 	router := newRouter(authService, emailsHandler)
 	loggingRouter := handlers.LoggingHandler(os.Stdout, router)

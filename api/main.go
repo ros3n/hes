@@ -5,6 +5,7 @@ import (
 	"github.com/ros3n/hes/api/messenger"
 	"github.com/ros3n/hes/api/repositories"
 	"github.com/ros3n/hes/api/server"
+	"github.com/ros3n/hes/api/server/middleware"
 	"github.com/ros3n/hes/api/services"
 	"log"
 	"os"
@@ -22,6 +23,8 @@ func main() {
 	apiReceiverAddr := strings.TrimSpace(os.Getenv("API_RECEIVER_ADDR"))
 	apiAddr := strings.TrimSpace(os.Getenv("API_ADDR"))
 	dbAddr := strings.TrimSpace(os.Getenv("HES_DATABASE_URL"))
+	userName := strings.TrimSpace(os.Getenv("HES_USER_NAME"))
+	password := strings.TrimSpace(os.Getenv("HES_PASSWORD"))
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
@@ -39,7 +42,9 @@ func main() {
 
 	callbackServer := server.NewCallbackServer(msgReceiver, emailService)
 
-	svr := server.NewServer(apiAddr, emailService)
+	authService := middleware.NewBasicAuthenticator(userName, password, "1")
+
+	svr := server.NewServer(apiAddr, emailService, authService)
 	go func() { log.Fatal(svr.ListenAndServe()) }()
 	err = callbackServer.Start()
 	if err != nil {
