@@ -54,4 +54,4 @@ Database migrations are handled by ActiveRecord. There is a Rakefile that provid
 Before running migrations one must first setup bundler: gem install bundler && bundle install. The Rakefile expects *HES_DATABASE_URL* to be set.
 
 #### Staging
-There is a staging Kubernetes claster available. It is deployed on DigitalOcean. For further information about how to use it see the [docs](https://app.swaggerhub.com/apis/rafalr/HES/1.0.0).
+There is a staging Kubernetes cluster available. It is deployed on DigitalOcean. For further information about how to use it see the [docs](https://app.swaggerhub.com/apis/rafalr/HES/1.0.0).
