@@ -103,7 +103,8 @@ func (der *DBEmailsRepository) Update(userID string, email *models.Email) (*mode
 	// currently updating status is the only requirement
 	createEmailQuery := der.queryBuilder.
 		Update("emails").
-		Set("status", email.Status)
+		Set("status", email.Status).
+		Where(sq.Eq{"id": email.ID, "user_id": userID})
 
 	query, args, err := createEmailQuery.ToSql()
 	if err != nil {
