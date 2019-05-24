@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+
 	"github.com/ros3n/hes/api/models"
 )
 

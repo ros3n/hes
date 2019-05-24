@@ -1,11 +1,12 @@
 package worker
 
 import (
+	"log"
+	"sync"
+
 	"github.com/ros3n/hes/mailer/mailer"
 	"github.com/ros3n/hes/mailer/models"
 	"gopkg.in/matryer/try.v1"
-	"log"
-	"sync"
 )
 
 type Worker struct {

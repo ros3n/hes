@@ -1,10 +1,11 @@
 package server
 
 import (
+	"log"
+
 	"github.com/ros3n/hes/api/messenger"
 	"github.com/ros3n/hes/api/models"
 	"github.com/ros3n/hes/api/services"
-	"log"
 )
 
 type CallbackServer struct {

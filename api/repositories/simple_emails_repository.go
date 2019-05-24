@@ -1,8 +1,9 @@
 package repositories
 
 import (
-	"github.com/ros3n/hes/api/models"
 	"sync"
+
+	"github.com/ros3n/hes/api/models"
 )
 
 type SimpleEmailsRepository struct {

@@ -1,8 +1,9 @@
 package validators
 
 import (
-	"github.com/ros3n/hes/lib/utils"
 	"testing"
+
+	"github.com/ros3n/hes/lib/utils"
 
 	"github.com/ros3n/hes/api/models"
 	"github.com/stretchr/testify/suite"

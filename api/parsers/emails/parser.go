@@ -3,10 +3,11 @@ package emails
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ros3n/hes/api/models"
 	"io"
 	"log"
 	"mime"
+
+	"github.com/ros3n/hes/api/models"
 )
 
 var (

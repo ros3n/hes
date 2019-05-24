@@ -1,9 +1,10 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/ros3n/hes/api/server/handlers"
 	"github.com/ros3n/hes/api/server/middleware"
-	"net/http"
 
 	"github.com/gorilla/mux"
 )

@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"errors"
-	"github.com/gorilla/mux"
-	"github.com/ros3n/hes/api/server/middleware"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/ros3n/hes/api/server/middleware"
 )
 
 var (

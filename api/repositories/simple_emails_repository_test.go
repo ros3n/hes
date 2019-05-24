@@ -1,9 +1,10 @@
 package repositories
 
 import (
+	"testing"
+
 	"github.com/ros3n/hes/api/models"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 const (

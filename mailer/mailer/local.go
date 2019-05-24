@@ -2,6 +2,7 @@ package mailer
 
 import (
 	"fmt"
+
 	"github.com/ros3n/hes/mailer/models"
 )
 

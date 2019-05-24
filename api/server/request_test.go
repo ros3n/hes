@@ -2,17 +2,18 @@ package server
 
 import (
 	"context"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
 	"github.com/ros3n/hes/api/models"
 	"github.com/ros3n/hes/api/repositories"
 	"github.com/ros3n/hes/api/server/handlers"
 	"github.com/ros3n/hes/api/server/middleware"
 	"github.com/ros3n/hes/api/services"
 	"github.com/stretchr/testify/suite"
-	"io/ioutil"
-	"net/http"
-	"net/http/httptest"
-	"strings"
-	"testing"
 )
 
 type EmailsAPITestSuite struct {

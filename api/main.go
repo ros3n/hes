@@ -2,16 +2,17 @@ package main
 
 import (
 	"context"
-	"github.com/ros3n/hes/api/messenger"
-	"github.com/ros3n/hes/api/repositories"
-	"github.com/ros3n/hes/api/server"
-	"github.com/ros3n/hes/api/server/middleware"
-	"github.com/ros3n/hes/api/services"
 	"log"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
+
+	"github.com/ros3n/hes/api/messenger"
+	"github.com/ros3n/hes/api/repositories"
+	"github.com/ros3n/hes/api/server"
+	"github.com/ros3n/hes/api/server/middleware"
+	"github.com/ros3n/hes/api/services"
 )
 
 func main() {

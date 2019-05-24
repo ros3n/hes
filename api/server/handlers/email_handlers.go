@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"errors"
+	"net/http"
+
 	"github.com/ros3n/hes/api/parsers/emails"
 	"github.com/ros3n/hes/api/services"
 	"github.com/ros3n/hes/api/validators"
-	"net/http"
 )
 
 type EmailsAPIHandler struct {

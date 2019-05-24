@@ -2,12 +2,13 @@ package manager
 
 import (
 	"context"
+	"log"
+	"sync"
+
 	"github.com/ros3n/hes/mailer/mailer"
 	"github.com/ros3n/hes/mailer/messenger"
 	"github.com/ros3n/hes/mailer/models"
 	"github.com/ros3n/hes/mailer/worker"
-	"log"
-	"sync"
 )
 
 type Manager struct {

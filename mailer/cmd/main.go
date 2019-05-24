@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/ros3n/hes/mailer/mailer"
-	"github.com/ros3n/hes/mailer/models"
-	"github.com/ros3n/hes/mailer/worker"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/ros3n/hes/mailer/mailer"
+	"github.com/ros3n/hes/mailer/models"
+	"github.com/ros3n/hes/mailer/worker"
 )
 
 func main() {

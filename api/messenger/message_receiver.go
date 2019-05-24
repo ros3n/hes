@@ -2,10 +2,11 @@ package messenger
 
 import (
 	"context"
-	"github.com/ros3n/hes/api/models"
-	"google.golang.org/grpc"
 	"log"
 	"net"
+
+	"github.com/ros3n/hes/api/models"
+	"google.golang.org/grpc"
 
 	pb "github.com/ros3n/hes/lib/communication"
 )

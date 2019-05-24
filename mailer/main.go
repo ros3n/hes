@@ -1,15 +1,16 @@
 package main
 
 import (
-	"github.com/ros3n/hes/mailer/mailer"
-	"github.com/ros3n/hes/mailer/manager"
-	"github.com/ros3n/hes/mailer/messenger"
-	"github.com/ros3n/hes/mailer/server"
 	"log"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
+
+	"github.com/ros3n/hes/mailer/mailer"
+	"github.com/ros3n/hes/mailer/manager"
+	"github.com/ros3n/hes/mailer/messenger"
+	"github.com/ros3n/hes/mailer/server"
 )
 
 func main() {
